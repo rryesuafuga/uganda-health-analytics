@@ -1,0 +1,30 @@
+Package: ugandahealthanalytics
+Type: Shiny
+Title: Uganda Child Health Analytics Dashboard
+Version: 0.1.0
+Author: Raymond Wayesu
+Maintainer: Raymond Wayesu <sseguya256@gmail.com>
+Description: A Shiny dashboard for analyzing and visualizing child health indicators in Uganda using data-driven modules and interactive visualizations.
+Depends: R (>= 4.2.0), R (< 4.5.0)
+Imports:
+    shiny,
+    shinydashboard,
+    leaflet,
+    ggplot2,
+    dplyr,
+    tidyr,
+    plotly,
+    visNetwork,
+    DT,
+    shinyjs,
+    promises,
+    future,
+    shinymeta,
+    MatchIt,
+    randomForest,
+    glmnet,
+    memoise,
+    shinycssloaders
+License: MIT
+Encoding: UTF-8
+LazyData: true
