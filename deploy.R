@@ -5,7 +5,7 @@ library(rsconnect)
 rsconnect::setAccountInfo(
   name = 'dnfxdz-raymond-wayesu',
   token = '4726F3D736CB5DD0B66707465523E4A2',
-  secret = '<SECRET>'
+  secret = 'DnIe0F4OyeX27UGTXMyU1B8aEMyXMqUOlr6Pe8l8'
 )
 
 # Deploy the app
