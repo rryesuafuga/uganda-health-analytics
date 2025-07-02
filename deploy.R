@@ -3,9 +3,9 @@ library(rsconnect)
 
 # Set account info (replace with your details)
 rsconnect::setAccountInfo(
-  name = 'your-account-name',
-  token = 'your-token',
-  secret = 'your-secret'
+  name = 'dnfxdz-raymond-wayesu',
+  token = '4726F3D736CB5DD0B66707465523E4A2',
+  secret = '<SECRET>'
 )
 
 # Deploy the app
