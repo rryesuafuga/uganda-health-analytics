@@ -1,8 +1,150 @@
+# .gitignore for Uganda Health Analytics Dashboard
+
+# R and RStudio files
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 *.Rproj
-cache/
+.Rprofile
+
+# R package files
+*.tar.gz
+*.Rcheck/
+
+# Shiny deployment
 rsconnect/
+shinyapps/
+
+# Cache directories
+cache/
+*_cache/
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+.~*
+
+# Log files
+*.log
+logs/
+
+# OS-specific files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Data files (if sensitive)
+# Uncomment if you don't want to track data files
+# data/*.csv
+# data/*.xlsx
+# data/*.xls
+# *.sqlite
+# *.db
+
+# Output files
+*.html
+*.pdf
+*.docx
+*.pptx
+reports/
+output/
+www/temp/
+
+# Development files
+.env
+.env.local
+.env.*.local
+config/local.yml
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python files (if using reticulate)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Node.js (if using any JS build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Profiling data
+*.Rprof
+*.Rprof.out
+profiling/
+
+# Test files
+tests/testthat/Rplots.pdf
+tests/testthat/*.log
+
+# Documentation build files
+_book/
+_bookdown_files/
+docs/
+
+# Large files
+*.zip
+*.tar
+*.gz
+*.7z
+*.rar
+
+# Credentials and secrets
+credentials.json
+secrets.yml
+*.pem
+*.key
+auth/
+
+# Session data
+.RDataTmp
+.Renviron
+
+# Shiny specific
+shiny_bookmarks/
+*.pid
+
+# Custom directories
+archive/
+old/
+deprecated/
+scratch/
+
+# Performance profiling
+profvis_output/
+*.prof
+
+# Memory dumps
+*.rds
+!app.rds
+
+# Keep important files
+!.gitkeep
+!README.md
+!DESCRIPTION
+!dependencies.R
