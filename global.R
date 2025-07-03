@@ -1,3 +1,8 @@
+# Ensure packages are available
+if (!require("shiny")) install.packages("shiny")
+if (!require("shinydashboard")) install.packages("shinydashboard")
+
+
 # global.R - Global configuration and optimization
 
 # Performance optimization: Load libraries once
