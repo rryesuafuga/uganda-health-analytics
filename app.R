@@ -1,9 +1,11 @@
-# Ensure packages are available
-if (!requireNamespace("shiny", quietly = TRUE)) {
+# Ensure required packages are loaded
+if (!require("shiny", quietly = TRUE)) {
   install.packages("shiny", repos = "https://cran.rstudio.com/")
+  library(shiny)
 }
-if (!requireNamespace("shinydashboard", quietly = TRUE)) {
+if (!require("shinydashboard", quietly = TRUE)) {
   install.packages("shinydashboard", repos = "https://cran.rstudio.com/")
+  library(shinydashboard)
 }
 
 
