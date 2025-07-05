@@ -1,3 +1,9 @@
+
+# At the very top of global.R
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  source("install_packages.R")
+}
+
 # Ensure packages are available
 if (!require("shiny")) install.packages("shiny")
 if (!require("shinydashboard")) install.packages("shinydashboard")
