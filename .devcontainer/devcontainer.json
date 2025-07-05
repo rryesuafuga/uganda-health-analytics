@@ -1,0 +1,16 @@
+{
+  "name": "R Development",
+  "image": "rocker/rstudio:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "REditorSupport.r",
+        "RDebugger.r-debugger"
+      ]
+    }
+  },
+  "postCreateCommand": "R -e 'install.packages(c(\"renv\", \"rsconnect\"))'"
+}
