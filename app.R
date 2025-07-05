@@ -1,3 +1,12 @@
+# Ensure packages are available
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny", repos = "https://cran.rstudio.com/")
+}
+if (!requireNamespace("shinydashboard", quietly = TRUE)) {
+  install.packages("shinydashboard", repos = "https://cran.rstudio.com/")
+}
+
+
 # app.R - Uganda Child Health Analytics Dashboard
 # World Vision Focus Area: Child Health & Mortality with Nutrition Integration
 
