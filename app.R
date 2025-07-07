@@ -1,12 +1,3 @@
-# Ensure required packages are loaded
-if (!require("shiny", quietly = TRUE)) {
-  install.packages("shiny", repos = "https://cran.rstudio.com/")
-  library(shiny)
-}
-if (!require("shinydashboard", quietly = TRUE)) {
-  install.packages("shinydashboard", repos = "https://cran.rstudio.com/")
-  library(shinydashboard)
-}
 
 
 # app.R - Uganda Child Health Analytics Dashboard
