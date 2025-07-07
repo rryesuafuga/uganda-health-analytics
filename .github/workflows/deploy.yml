@@ -17,42 +17,10 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.3.3'
-          use-public-rspm: true
       
-      - name: Install system dependencies
+      - name: Install rsconnect
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libcurl4-openssl-dev \
-            libssl-dev \
-            libxml2-dev \
-            libfontconfig1-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            libfreetype6-dev \
-            libpng-dev \
-            libtiff5-dev \
-            libjpeg-dev \
-            libglpk-dev
-      
-      - name: Setup renv
-        uses: r-lib/actions/setup-renv@v2
-        with:
-          cache-version: 1
-      
-      - name: Install deployment packages
-        run: |
-          if (!requireNamespace("rsconnect", quietly = TRUE)) {
-            install.packages("rsconnect")
-          }
-          if (!requireNamespace("renv", quietly = TRUE)) {
-            install.packages("renv")
-          }
-        shell: Rscript {0}
-      
-      - name: Restore R packages from renv.lock
-        run: |
-          renv::restore()
+          install.packages("rsconnect")
         shell: Rscript {0}
       
       - name: Deploy to shinyapps.io
@@ -63,28 +31,16 @@ jobs:
         run: |
           library(rsconnect)
           
-          # Set account info
           rsconnect::setAccountInfo(
             name = Sys.getenv("SHINYAPPS_NAME"),
             token = Sys.getenv("SHINYAPPS_TOKEN"),
             secret = Sys.getenv("SHINYAPPS_SECRET")
           )
           
-          # Deploy app with renv
           rsconnect::deployApp(
             appDir = ".",
             appName = "uganda-health-analytics",
             forceUpdate = TRUE,
-            appFiles = c(
-              "app.R",
-              "global.R",
-              "renv.lock",
-              ".Rprofile",
-              "renv/activate.R",
-              "renv/settings.json",
-              "modules/",
-              "www/",
-              "data/"
-            )
+            appFiles = c("app.R", "setup.R", "global.R", "modules/", "www/", "data/")
           )
         shell: Rscript {0}
