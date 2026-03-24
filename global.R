@@ -29,6 +29,7 @@ suppressPackageStartupMessages({
   library(visNetwork)
   library(data.table)  # For faster data operations
   library(memoise)     # For caching
+  library(cachem)      # For disk caching
   library(future)      # For async operations
   library(promises)    # For async operations
 })

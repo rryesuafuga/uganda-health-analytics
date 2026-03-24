@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Raymond Wayesu
 Maintainer: Raymond Wayesu <sseguya256@gmail.com>
 Description: A Shiny dashboard for analyzing and visualizing child health indicators in Uganda using data-driven modules and interactive visualizations.
-Depends: R (>= 4.2.0), R (< 4.5.0)
+Depends: R (>= 4.2.0)
 Imports:
     shiny,
     shinydashboard,
@@ -24,6 +24,8 @@ Imports:
     randomForest,
     glmnet,
     memoise,
+    cachem,
+    data.table,
     shinycssloaders
 License: MIT
 Encoding: UTF-8
