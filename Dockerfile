@@ -1,6 +1,6 @@
 FROM rocker/shiny:4.4.0
 
-# Install system dependencies
+# Install system dependencies (including those needed for leaflet/visNetwork)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
@@ -15,14 +15,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libtiff5-dev \
     libjpeg-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
+# Set CRAN mirror and use multiple cores for compilation
+ENV MAKEFLAGS="-j2"
+
 # Install R packages in groups to catch failures early
-RUN R -e "install.packages(c('shiny', 'shinydashboard', 'shinyjs', 'shinycssloaders'), repos='https://cloud.r-project.org/')"
-RUN R -e "install.packages(c('plotly', 'dplyr', 'tidyr', 'ggplot2', 'DT'), repos='https://cloud.r-project.org/')"
-RUN R -e "install.packages(c('glmnet', 'MatchIt', 'randomForest'), repos='https://cloud.r-project.org/')"
-RUN R -e "install.packages(c('leaflet', 'visNetwork'), repos='https://cloud.r-project.org/')"
-RUN R -e "install.packages(c('data.table', 'memoise', 'cachem', 'future', 'promises'), repos='https://cloud.r-project.org/')"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages(c('shiny', 'shinydashboard', 'shinyjs', 'shinycssloaders'))"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages(c('plotly', 'dplyr', 'tidyr', 'ggplot2', 'DT'))"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages(c('glmnet', 'MatchIt', 'randomForest'))"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages('htmlwidgets')"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages('leaflet')"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages('visNetwork')"
+RUN R -e "options(repos='https://cloud.r-project.org/', Ncpus=2); install.packages(c('data.table', 'memoise', 'cachem', 'future', 'promises'))"
 
 # Verify all critical packages are installed
 RUN R -e "pkgs <- c('shiny','shinydashboard','shinyjs','shinycssloaders','plotly','dplyr','tidyr','ggplot2','DT','glmnet','MatchIt','randomForest','leaflet','visNetwork','data.table','memoise','cachem','future','promises'); missing <- pkgs[!sapply(pkgs, requireNamespace, quietly=TRUE)]; if(length(missing)>0) stop(paste('Missing packages:', paste(missing, collapse=', ')))"
