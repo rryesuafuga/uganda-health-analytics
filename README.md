@@ -1,3 +1,12 @@
+---
+title: Uganda Health Analytics
+emoji: 🏥
+colorFrom: orange
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # Uganda Child Health Analytics Dashboard
 
 An interactive R Shiny dashboard that helps public health professionals, researchers, and humanitarian organizations explore and analyze child health indicators in Uganda. The app brings together data from the WHO Global Health Observatory on child mortality, nutrition, malaria, and health systems, and provides built-in statistical modeling and machine learning tools so users can uncover trends, evaluate interventions, and make data-informed decisions without writing code.
