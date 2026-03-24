@@ -17,28 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install R packages
-RUN R -e "install.packages(c( \
-  'shiny', \
-  'shinydashboard', \
-  'shinyjs', \
-  'shinycssloaders', \
-  'plotly', \
-  'dplyr', \
-  'tidyr', \
-  'ggplot2', \
-  'DT', \
-  'glmnet', \
-  'MatchIt', \
-  'randomForest', \
-  'leaflet', \
-  'visNetwork', \
-  'data.table', \
-  'memoise', \
-  'cachem', \
-  'future', \
-  'promises' \
-), repos='https://cloud.r-project.org/')"
+# Install R packages in groups to catch failures early
+RUN R -e "install.packages(c('shiny', 'shinydashboard', 'shinyjs', 'shinycssloaders'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('plotly', 'dplyr', 'tidyr', 'ggplot2', 'DT'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('glmnet', 'MatchIt', 'randomForest'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('leaflet', 'visNetwork'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('data.table', 'memoise', 'cachem', 'future', 'promises'), repos='https://cloud.r-project.org/')"
+
+# Verify all critical packages are installed
+RUN R -e "pkgs <- c('shiny','shinydashboard','shinyjs','shinycssloaders','plotly','dplyr','tidyr','ggplot2','DT','glmnet','MatchIt','randomForest','leaflet','visNetwork','data.table','memoise','cachem','future','promises'); missing <- pkgs[!sapply(pkgs, requireNamespace, quietly=TRUE)]; if(length(missing)>0) stop(paste('Missing packages:', paste(missing, collapse=', ')))"
 
 # Create app directory
 RUN mkdir -p /app
