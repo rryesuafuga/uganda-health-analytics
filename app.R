@@ -17,7 +17,7 @@ source("modules/visualizationModule.R")
 
 # UI Definition
 ui <- dashboardPage(
-  skin = "black",
+  skin = "blue",
 
   # Header
   dashboardHeader(
@@ -35,9 +35,9 @@ ui <- dashboardPage(
       id = "tabs",
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
       menuItem("Data Explorer", tabName = "data", icon = icon("database")),
-      menuItem("Statistical Analysis", tabName = "analysis", icon = icon("chart-bar")),
-      menuItem("ML Modeling", tabName = "modeling", icon = icon("robot")),
-      menuItem("Insights", tabName = "visualization", icon = icon("brain"))
+      menuItem("Trends & Patterns", tabName = "analysis", icon = icon("chart-bar")),
+      menuItem("Predictions", tabName = "modeling", icon = icon("chart-line")),
+      menuItem("Insights", tabName = "visualization", icon = icon("lightbulb"))
     ),
     tags$div(
       style = "padding: 15px; position: absolute; bottom: 0; width: 100%;",
@@ -78,21 +78,21 @@ ui <- dashboardPage(
             tags$div(
               class = "glass-card",
               h4("About This Dashboard"),
-              p("This interactive dashboard provides comprehensive analytics on child health
-                indicators in Uganda, leveraging data from the World Health Organization's
-                Global Health Observatory (GHO)."),
+              p("This dashboard helps you explore and understand child health
+                trends in Uganda using data from the World Health Organization (WHO).
+                No statistics background needed -- just explore!"),
               tags$ul(
-                tags$li(tags$strong("Data Explorer:"), " Browse and filter WHO/GHO health datasets"),
-                tags$li(tags$strong("Statistical Analysis:"), " Correlation analysis, GLM modeling, and time series decomposition"),
-                tags$li(tags$strong("ML Modeling:"), " Random Forest, LASSO, Ridge Regression, and Gradient Boosting"),
-                tags$li(tags$strong("Insights:"), " AI-powered recommendations and health determinant networks")
+                tags$li(tags$strong("Data Explorer:"), " Browse the raw health data with search and filters"),
+                tags$li(tags$strong("Trends & Patterns:"), " See how health indicators relate to each other and change over time"),
+                tags$li(tags$strong("Predictions:"), " Use models to estimate how changes in water, sanitation, or immunization could affect child health"),
+                tags$li(tags$strong("Insights:"), " Key findings and recommended actions at a glance")
               )
             )
           ),
           box(
             title = "Quick Insights",
             width = 4,
-            status = "warning",
+            status = "info",
             solidHeader = TRUE,
             visualizationModuleUI("viz_sidebar")
           )
@@ -118,7 +118,7 @@ ui <- dashboardPage(
       tabItem(tabName = "visualization",
         fluidRow(
           box(
-            title = "Health Determinants & AI Insights",
+            title = "Health Factors & Recommendations",
             width = 12,
             status = "primary",
             solidHeader = TRUE,
@@ -135,48 +135,28 @@ server <- function(input, output, session) {
 
   # Load and combine health data for modules
   health_data <- reactive({
-    # Try to load and combine available datasets
     files <- c(
       "data/child_mortality_indicators_uga.csv",
       "data/nutrition_indicators_uga.csv",
       "data/malaria_indicators_uga.csv"
     )
 
-    all_data <- lapply(files, function(f) {
-      if (file.exists(f)) {
-        df <- data.table::fread(f, stringsAsFactors = FALSE)
-        # Standardize column names
-        if ("IndicatorCode" %in% names(df) && !"indicator" %in% names(df)) {
-          names(df)[names(df) == "IndicatorCode"] <- "indicator"
-        }
-        if ("TimeDim" %in% names(df) && !"year" %in% names(df)) {
-          names(df)[names(df) == "TimeDim"] <- "year"
-        }
-        if ("NumericValue" %in% names(df) && !"value" %in% names(df)) {
-          names(df)[names(df) == "NumericValue"] <- "value"
-        }
-        if ("Dim1" %in% names(df) && !"region" %in% names(df)) {
-          names(df)[names(df) == "Dim1"] <- "region"
-        }
-        # Ensure required columns exist
-        for (col in c("indicator", "year", "value", "region")) {
-          if (!col %in% names(df)) {
-            df[[col]] <- NA
-          }
-        }
-        df[, c("indicator", "year", "value", "region"), with = FALSE]
-      } else {
-        NULL
-      }
-    })
-
+    all_data <- lapply(files, read_gho_csv)
     all_data <- all_data[!sapply(all_data, is.null)]
 
     if (length(all_data) > 0) {
-      data.table::rbindlist(all_data, fill = TRUE)
+      # Keep the key columns that exist in every dataset
+      keep_cols <- c("indicator_code", "indicator", "year", "value",
+                     "region", "country", "dimension", "display_value",
+                     "lower_bound", "upper_bound")
+      all_data <- lapply(all_data, function(dt) {
+        cols <- intersect(keep_cols, names(dt))
+        dt[, ..cols]
+      })
+      rbindlist(all_data, fill = TRUE)
     } else {
       # Return sample data if no files found
-      data.table::data.table(
+      data.table(
         indicator = rep(c("Under-5 Mortality", "Stunting", "Immunization"), each = 10),
         year = rep(2010:2019, 3),
         value = c(
@@ -184,7 +164,8 @@ server <- function(input, output, session) {
           seq(35, 28, length.out = 10),
           seq(60, 85, length.out = 10)
         ),
-        region = "National"
+        region = "Africa",
+        country = "Uganda"
       )
     }
   })
@@ -193,7 +174,7 @@ server <- function(input, output, session) {
   output$total_indicators <- renderValueBox({
     df <- health_data()
     n <- length(unique(df$indicator))
-    valueBox(n, "Health Indicators", icon = icon("stethoscope"), color = "orange")
+    valueBox(n, "Health Indicators", icon = icon("stethoscope"), color = "blue")
   })
 
   output$datasets_loaded <- renderValueBox({
@@ -204,27 +185,33 @@ server <- function(input, output, session) {
       "data/health_indicators_uga.csv",
       "data/health_systems_indicators_uga.csv"
     )))
-    valueBox(n, "Datasets Loaded", icon = icon("database"), color = "blue")
+    valueBox(n, "Datasets Loaded", icon = icon("database"), color = "aqua")
   })
 
   output$years_covered <- renderValueBox({
     df <- health_data()
-    years <- range(df$year, na.rm = TRUE)
-    valueBox(
-      paste(years[1], "-", years[2]),
-      "Years Covered",
-      icon = icon("calendar"),
-      color = "green"
-    )
+    valid_years <- df$year[!is.na(df$year) & is.finite(df$year)]
+    if (length(valid_years) > 0) {
+      years <- range(valid_years)
+      valueBox(
+        paste(years[1], "-", years[2]),
+        "Years Covered",
+        icon = icon("calendar"),
+        color = "teal"
+      )
+    } else {
+      valueBox("N/A", "Years Covered", icon = icon("calendar"), color = "teal")
+    }
   })
 
   output$data_points <- renderValueBox({
     df <- health_data()
+    n_valid <- sum(!is.na(df$value))
     valueBox(
-      format(nrow(df), big.mark = ","),
+      format(n_valid, big.mark = ","),
       "Data Points",
       icon = icon("chart-line"),
-      color = "yellow"
+      color = "olive"
     )
   })
 

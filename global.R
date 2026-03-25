@@ -1,3 +1,4 @@
+# global.R - Global configuration and optimization
 
 # At the very top of global.R
 if (!requireNamespace("shiny", quietly = TRUE)) {
@@ -7,7 +8,6 @@ if (!requireNamespace("shiny", quietly = TRUE)) {
 # Ensure packages are available
 if (!require("shiny")) install.packages("shiny")
 if (!require("shinydashboard")) install.packages("shinydashboard")
-
 
 # global.R - Global configuration and optimization
 
@@ -70,10 +70,23 @@ future_promise({
   })
 })
 
+# ---- Colorblind-safe palette (Okabe-Ito based) ----
+# These colors are distinguishable by people with all types of color vision
+uganda_colors <- list(
+  primary    = "#2C5F8A",   # Dark blue
+  secondary  = "#56B4E9",   # Sky blue
+  success    = "#009E73",   # Teal green
+  warning    = "#E69F00",   # Amber
+  danger     = "#D55E00",   # Vermillion
+  info       = "#56B4E9",   # Sky blue
+  purple     = "#CC79A7",   # Reddish purple
+  dark       = "#333333"    # Near-black
+)
+
 # Global theme settings
 theme_uganda <- theme_minimal() +
   theme(
-    plot.title = element_text(size = 16, face = "bold", color = "#FF6200"),
+    plot.title = element_text(size = 16, face = "bold", color = "#2C5F8A"),
     plot.subtitle = element_text(size = 12, color = "#666"),
     axis.title = element_text(size = 12),
     legend.position = "bottom",
@@ -91,24 +104,58 @@ plotly_config <- list(
   responsive = TRUE
 )
 
-# Color palette
-uganda_colors <- list(
-  primary = "#FF6200",
-  secondary = "#0095DA",
-  success = "#52C41A",
-  warning = "#FAAD14",
-  danger = "#F5222D",
-  info = "#1890FF"
-)
+# ---- Helper: read and clean a WHO/GHO CSV ----
+# Skips the HXL tag row and renames columns to readable names
+read_gho_csv <- function(file_path) {
+  if (!file.exists(file_path)) return(NULL)
+
+  df <- fread(file_path, stringsAsFactors = FALSE)
+
+  # Remove HXL tag row (values start with #)
+  if (nrow(df) > 0 && grepl("^#", df[[1]][1])) {
+    df <- df[-1, ]
+  }
+
+  # Standardise column names to short readable forms
+  name_map <- c(
+    "GHO (CODE)"        = "indicator_code",
+    "GHO (DISPLAY)"     = "indicator",
+    "GHO (URL)"         = "indicator_url",
+    "YEAR (DISPLAY)"    = "year",
+    "STARTYEAR"         = "start_year",
+    "ENDYEAR"           = "end_year",
+    "REGION (CODE)"     = "region_code",
+    "REGION (DISPLAY)"  = "region",
+    "COUNTRY (CODE)"    = "country_code",
+    "COUNTRY (DISPLAY)" = "country",
+    "DIMENSION (TYPE)"  = "dimension_type",
+    "DIMENSION (CODE)"  = "dimension_code",
+    "DIMENSION (NAME)"  = "dimension",
+    "Numeric"           = "value",
+    "Value"             = "display_value",
+    "Low"               = "lower_bound",
+    "High"              = "upper_bound"
+  )
+
+  for (old_name in names(name_map)) {
+    idx <- which(names(df) == old_name)
+    if (length(idx) == 1) names(df)[idx] <- name_map[[old_name]]
+  }
+
+  # Coerce numeric columns
+  for (col in c("year", "start_year", "end_year", "value", "lower_bound", "upper_bound")) {
+    if (col %in% names(df)) {
+      df[[col]] <- suppressWarnings(as.numeric(df[[col]]))
+    }
+  }
+
+  as.data.table(df)
+}
 
 # Helper functions for consistent styling
 create_value_box <- function(value, subtitle, icon_name, color) {
   valueBox(
-    value = tags$span(
-      class = "animated-counter",
-      "data-end" = gsub("[^0-9.-]", "", as.character(value)),
-      value
-    ),
+    value = value,
     subtitle = subtitle,
     icon = icon(icon_name),
     color = color
