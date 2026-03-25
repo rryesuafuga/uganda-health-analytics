@@ -13,6 +13,8 @@ This is an interactive web dashboard for exploring child health data in Uganda. 
 
 Whether you work in public health, research, policy, or humanitarian aid, this tool gives you a single place to see how Uganda's child health indicators have changed over time and what factors matter most.
 
+**Try it now:** [https://huggingface.co/spaces/ryesuafuga/uganda-health-analytics](https://huggingface.co/spaces/ryesuafuga/uganda-health-analytics) -- no login or install needed, just open the link.
+
 ## What can you do with it?
 
 ### Browse the data
